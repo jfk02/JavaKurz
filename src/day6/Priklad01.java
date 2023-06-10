@@ -2,6 +2,8 @@ package day6;
 
 import static java.lang.System.out;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class Priklad01 {
@@ -18,12 +20,14 @@ public class Priklad01 {
 
         double studentGrade = 1.5;
         int year = 2022;
-        String birthDate = "03.04.2000";
-        
+
         Date datum = new Date();
         SimpleDateFormat dayFormatter = new SimpleDateFormat("dd.MM.yyyy");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-        String textToShow = "Študent Jozef Mrkvička sa narodil " + birthDate + ", z maturitnej skúšky má známku "
+        LocalDate birthDate = LocalDate.of(2023,05,10);
+
+        String textToShow = "Študent Jozef Mrkvička sa narodil " + dateFormatter.format(birthDate)+ ", z maturitnej skúšky má známku "
                 + studentGrade + " a od septembra " + year + " nastúpi do nového zamestnania ako Java programátor.\n"
                 + "V Bratislave dňa " + dayFormatter.format(datum);
 
