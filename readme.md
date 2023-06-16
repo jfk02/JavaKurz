@@ -1,0 +1,1 @@
+Riešené príklady počas kurzu **Java Developer Junior**.
