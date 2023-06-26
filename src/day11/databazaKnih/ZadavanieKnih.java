@@ -1,10 +1,9 @@
 package day11.databazaKnih;
 
-import day11.databazaKnih.Kniha;
-
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Trieda pre správu databázy kníh.
@@ -13,6 +12,7 @@ public class ZadavanieKnih {
 
     /**
      * Vstup užívateľa z konzoly.
+     *
      * @param vyzva
      * @return Vstup užívateľa ako String.
      */
@@ -26,7 +26,7 @@ public class ZadavanieKnih {
 
             System.out.print(vyzva);
             try {
-                vlozenaKniha = riadkovyVstup.nextLine();
+                vlozenaKniha = riadkovyVstup.nextLine().trim();
             } catch (NoSuchElementException e) {
                 System.out.print("\n\n Nastala chyba pri vstupe!\n\n");
                 chybaVstupu = true;
@@ -38,12 +38,16 @@ public class ZadavanieKnih {
 
     /**
      * Vypíše všetky knihy v databáze na konzolu.
+     *
      * @param zoznamKnihPreVypis
      */
     private static void vypisKnihy(ArrayList<Kniha> zoznamKnihPreVypis) {
-        for (int i = 0; i < zoznamKnihPreVypis.size(); i++) {
-            System.out.println(i + " : " + zoznamKnihPreVypis.get(i).getNazov());
-        }
+        zoznamKnihPreVypis.forEach(kniha -> {
+            System.out.println(kniha.getNazov() + ", "
+                    + kniha.getAutor() + ", "
+                    + kniha.getRokVydania());
+        });
+
     }
 
     public static void main(String[] args) {
@@ -51,20 +55,28 @@ public class ZadavanieKnih {
         ArrayList<Kniha> knihy = new ArrayList<>();
         String vstupUzivatela = "";
 
-        System.out.println("Pre naplnenie zoznamu kníh zadávaj ich názvy.");
-        System.out.println("Zadávanie ukončíš slovom \"koniec\".");
-        System.out.println();
+        System.out.println("Pre naplnenie zoznamu kníh zadávaj ich názvy.\n"
+                + "Zadávanie ukončíš slovom \"koniec\".\n");
 
         for (; ; ) {
             vstupUzivatela = vstup("Zadať ďalšiu knihu? ");
-            if (vstupUzivatela.toLowerCase().trim().equals("koniec")) break;
+            if (vstupUzivatela.equalsIgnoreCase("koniec")) break;
 
-            vstupUzivatela = vstup("Zadaj názov knihy: ");
-            var novaKniha = new Kniha (vstupUzivatela);
+            vstupUzivatela = vstup("\tNázov: ");
+            var novaKniha = new Kniha(vstupUzivatela);
+
+            vstupUzivatela = vstup("\tAutor: ");
+            novaKniha.setAutor(vstupUzivatela);
+
+            vstupUzivatela = vstup("\tRok vydania: ");
+            int rok = Integer.parseInt(vstupUzivatela);
+            novaKniha.setRokVydania(rok);
 
             System.out.println();
             knihy.add(novaKniha);
         }
+
+        System.out.println();
 
         if (knihy.size() > 0) {
             vypisKnihy(knihy);

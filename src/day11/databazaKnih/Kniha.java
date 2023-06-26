@@ -6,7 +6,7 @@ package day11.databazaKnih;
 public class Kniha {
     private String autor;
     private String nazov;
-    private String rokVydania;
+    private int rokVydania;
     private String zaner;
 
     public String getAutor() {
@@ -14,7 +14,7 @@ public class Kniha {
     }
 
     public void setAutor(String autor) {
-        this.autor = autor.trim();
+        this.autor = autor;
     }
 
     public String getNazov() {
@@ -22,15 +22,15 @@ public class Kniha {
     }
 
     public void setNazov(String nazov) {
-        this.nazov = nazov.trim();
+        this.nazov = nazov;
     }
 
-    public String getRokVydania() {
+    public int getRokVydania() {
         return rokVydania;
     }
 
-    public void setRokVydania(String rokVydania) {
-        this.rokVydania = rokVydania.trim();
+    public void setRokVydania(int rokVydania) {
+        this.rokVydania = rokVydania;
     }
 
     public String getZaner() {
@@ -38,7 +38,7 @@ public class Kniha {
     }
 
     public void setZaner(String zaner) {
-        this.zaner = zaner.trim();
+        this.zaner = zaner;
     }
 
     public String getVydavatelstvo() {
@@ -46,12 +46,12 @@ public class Kniha {
     }
 
     public void setVydavatelstvo(String vydavatelstvo) {
-        this.vydavatelstvo = vydavatelstvo.trim();
+        this.vydavatelstvo = vydavatelstvo;
     }
 
     private String vydavatelstvo;
 
-    public Kniha(String autor, String nazov, String rokVydania, String zaner, String vydavatelstvo) {
+    public Kniha(String autor, String nazov, int rokVydania, String zaner, String vydavatelstvo) {
         this.autor = autor;
         this.nazov = nazov;
         this.rokVydania = rokVydania;
@@ -60,6 +60,6 @@ public class Kniha {
     }
 
     public Kniha(String nazov) {
-        this.nazov = nazov.trim();
+        this.nazov = nazov;
     }
 }
