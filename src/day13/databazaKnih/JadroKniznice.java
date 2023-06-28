@@ -22,7 +22,8 @@ public class JadroKniznice {
     }
 
     /**
-     * Formatovaný výpis knižnice.
+     * Formátovaný výpis knižnice.
+     *
      * @param index
      * @param nazov
      * @param autor
@@ -34,7 +35,8 @@ public class JadroKniznice {
     }
 
     /**
-     * Formatovaný výpis knižnice.
+     * Formátovaný výpis knižnice.
+     *
      * @param nazov
      * @param autor
      * @param rok
@@ -75,20 +77,20 @@ public class JadroKniznice {
      *
      * @return Nová Kniha.
      */
-    protected static Kniha novaKniha() {
-        String vlastnostiKnihy;
+    protected static void novaKniha(DatabazaKnih databazaKnih) {
+        String nazov = "";
+        String autor = "";
 
-        vlastnostiKnihy = vstup("\tNázov: ");
-        var novaKniha = new Kniha(vlastnostiKnihy);
+        nazov = vstup("\tNázov: ");
+        autor = vstup("\tAutor: ");
+        String rokVydania = vstup("\tRok vydania: ");
+        int rok = mojStringNaInt(rokVydania);
 
-        vlastnostiKnihy = vstup("\tAutor: ");
-        novaKniha.setAutor(vlastnostiKnihy);
-
-        vlastnostiKnihy = vstup("\tRok vydania: ");
-        int rok = mojStringNaInt(vlastnostiKnihy);
-        novaKniha.setRokVydania(rok);
-
-        return novaKniha;
+        if (rok > -1 && !autor.isEmpty() && !nazov.isEmpty()) {
+            databazaKnih.pridajNovuKnihu(nazov, autor, rok);
+        } else {
+            System.out.println("Neboli zadané platné údaje, kniha NEBOLA pridaná do knižnice!");
+        }
     }
 
     /**

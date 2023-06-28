@@ -59,6 +59,12 @@ public class Kniha {
         this.vydavatelstvo = vydavatelstvo;
     }
 
+    public Kniha(String autor, String nazov, int rokVydania) {
+        this.autor = autor;
+        this.nazov = nazov;
+        this.rokVydania = rokVydania;
+    }
+
     public Kniha(String nazov) {
         this.nazov = nazov;
     }

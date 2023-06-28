@@ -58,24 +58,18 @@ public class DatabazaKnih {
     }
 
     /**
-     * Pridá knihu do databázi.
-     *
-     * @param novaKniha Objekt Kniha pre pridanie do databázi.
-     * @return TRUE ak kniha bola pridana a FALSE ak nebola.
+     * Pridá knihu do databáze.
+     * @param nazov Názov knihy.
+     * @param autor Autor knihy.
+     * @param rokVydania Rok vydania knihy.
      */
-    public boolean pridajNovuKnihu(Kniha novaKniha) {
-        boolean knihaPridana;
-        if (novaKniha != null) {
-            databazaKnih.add(novaKniha);
-            knihaPridana = true;
-        } else {
-            knihaPridana = false;
-        }
-        return knihaPridana;
+    public void pridajNovuKnihu(String nazov, String autor, int rokVydania) {
+        var novaKniha = new Kniha(nazov, autor, rokVydania);
+        databazaKnih.add(novaKniha);
     }
 
     /**
-     * Vyhľadá knihu v databázi podľa hladaného textu v názve alebo autorovi knihy.
+     * Vyhľadá knihu v databáze podľa hladaného textu v názve alebo autorovi knihy.
      *
      * @param hladanyText Hľadaný text.
      * @return List nájdených kníh alebo null.
