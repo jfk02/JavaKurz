@@ -1,9 +1,9 @@
-package day13.databazaKnih;
+package sk.javakurz.databazaknih.models;
 
 /**
  * Model Knihy
  */
-public class Kniha {
+public class KnihaModel {
     private String autor;
     private String nazov;
     private int rokVydania;
@@ -51,7 +51,7 @@ public class Kniha {
 
     private String vydavatelstvo;
 
-    public Kniha(String autor, String nazov, int rokVydania, String zaner, String vydavatelstvo) {
+    public KnihaModel(String autor, String nazov, int rokVydania, String zaner, String vydavatelstvo) {
         this.autor = autor;
         this.nazov = nazov;
         this.rokVydania = rokVydania;
@@ -59,13 +59,13 @@ public class Kniha {
         this.vydavatelstvo = vydavatelstvo;
     }
 
-    public Kniha(String autor, String nazov, int rokVydania) {
+    public KnihaModel(String autor, String nazov, int rokVydania) {
         this.autor = autor;
         this.nazov = nazov;
         this.rokVydania = rokVydania;
     }
 
-    public Kniha(String nazov) {
+    public KnihaModel(String nazov) {
         this.nazov = nazov;
     }
 }
