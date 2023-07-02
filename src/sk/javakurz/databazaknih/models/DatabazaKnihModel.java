@@ -2,10 +2,11 @@ package sk.javakurz.databazaknih.models;
 
 import day11.databazaKnih.Kniha;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
-public class DatabazaKnihModel {
+public class DatabazaKnihModel implements Serializable {
 
     public LinkedHashMap<Integer, KnihaModel> getDatabazaKnih() {
         return databazaKnih;

@@ -10,6 +10,8 @@ public class MenuServiceImpl implements MenuService {
 
     private DatabazaKnihDao databazaKnihDao;
 
+    private final Scanner scanner = new Scanner(System.in);
+
     private final String oddelovacTabulky = "+" + "-".repeat(7)
             + "+" + "-".repeat(42)
             + "+" + "-".repeat(32)
@@ -64,23 +66,8 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public String vstup(String vyzva) {
-        boolean chybaVstupu;
-        String vstupUzivatela = "";
-
-        do {
-            Scanner citajVstup = new Scanner(System.in);
-            chybaVstupu = false;
-
-            System.out.print(vyzva);
-            try {
-                vstupUzivatela = citajVstup.nextLine().trim();
-            } catch (NoSuchElementException e) {
-                vypisChyboveHlasenie("\n\n Nastala chyba pri vstupe!\n\n");
-                chybaVstupu = true;
-            }
-        } while (chybaVstupu);
-
-        return vstupUzivatela;
+        System.out.print(vyzva);
+        return scanner.nextLine().trim();
     }
 
     @Override
@@ -103,17 +90,15 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public void zobrazVsetkyKnihy() {
         if (databazaKnihDao.pocetKnih() > 0) {
-            var databazaKnih = databazaKnihDao.getDatabazaKnihModel().getDatabazaKnih();
             vypisHlavickuTabulky();
-            databazaKnihDao.getDatabazaKnihModel().getDatabazaKnih()
-                    .keySet()
+            databazaKnihDao.getIndexyVDatabazi()
                     .stream()
                     .sorted()
                     .forEach(index ->
                             formatovanyVypis(index.toString(),
-                                    databazaKnih.get(index).getNazov(),
-                                    databazaKnih.get(index).getAutor(),
-                                    Integer.toString(databazaKnih.get(index).getRokVydania())));
+                                    databazaKnihDao.getKniha(index).getNazov(),
+                                    databazaKnihDao.getKniha(index).getAutor(),
+                                    Integer.toString(databazaKnihDao.getKniha(index).getRokVydania())));
             System.out.println(oddelovacTabulky);
         } else {
             vypisChyboveHlasenie("Knižnica je prázdna!");
@@ -145,10 +130,10 @@ public class MenuServiceImpl implements MenuService {
     public void vymazKnihu() {
         String vstupIndex = vstup("\tIndex knihy pre vymazanie: ");
         int index;
-
         index = mojStringNaInt(vstupIndex);
 
         var vymazana = databazaKnihDao.vymazKnihu(index);
+
         if (vymazana) {
             System.out.println("Kniha s indexom " + index + " bola vymazaná.");
         } else {

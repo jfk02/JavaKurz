@@ -1,9 +1,11 @@
 package sk.javakurz.databazaknih.models;
 
+import java.io.Serializable;
+
 /**
  * Model Knihy
  */
-public class KnihaModel {
+public class KnihaModel implements Serializable {
     private String autor;
     private String nazov;
     private int rokVydania;

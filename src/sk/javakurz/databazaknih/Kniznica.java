@@ -5,78 +5,100 @@ import sk.javakurz.databazaknih.dao.DatabazaKnihDao;
 import sk.javakurz.databazaknih.dao.DatabazaKnihDaoImpl;
 import sk.javakurz.databazaknih.services.MenuService;
 import sk.javakurz.databazaknih.services.MenuServiceImpl;
+import sk.javakurz.databazaknih.services.SuboryService;
 import sk.javakurz.databazaknih.services.SuboryServiceImpl;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Trieda pre správu databázy kníh.
+ * Hlavná trieda programu obsahujúca main metódu.
  */
 public class Kniznica {
+    private static DatabazaKnihDao mojaKniznica;
+    private static MenuService menuService;
+    private static SuboryService suboryService;
+
+    /**
+     * Inicializuje aplikáciu vytvorením databázy a všetkých služieb s použitím Dependency Injection.
+     */
+    private static void inicializaciaAplikacie() {
+        //Inicializácia knižnice
+        mojaKniznica = new DatabazaKnihDaoImpl();
+        menuService = new MenuServiceImpl(mojaKniznica);
+        suboryService = new SuboryServiceImpl(mojaKniznica);
+    }
+
+    /**
+     * Vytvorí slovník zložený z akcií menu s kľúčom, ktorý vyvoláva menu.
+     *
+     * @return Slovník menu akcií.
+     */
+    private static Map<String, Runnable> getMenuAkcie() {
+        Map<String, Runnable> menuMap = new HashMap<>();
+        menuMap.put("1", () -> menuService.novaKniha());
+        menuMap.put("2", () -> menuService.zobrazVsetkyKnihy());
+        menuMap.put("3", () -> menuService.zobrazKnihu());
+        menuMap.put("4", () -> menuService.vymazKnihu());
+        menuMap.put("5", () -> menuService.vypisPocetKnih());
+        menuMap.put("6", () -> menuService.hladajKnihu());
+        menuMap.put("7", () -> suboryService.nacitajDatabazu());
+        menuMap.put("8", () -> suboryService.ulozDatabazu());
+        menuMap.put("9", () -> suboryService.ulozDoPDF());
+        menuMap.put("X", () -> menuService.vymazKniznicu());
+        return menuMap;
+    }
+
+    /**
+     * Hlavné menu programu Kniznica.
+     */
+    private static void hlavneMenu() {
+
+        var menuActions = getMenuAkcie();
+
+        while (true) {
+            System.out.println(FarebnaKonzola.CYAN_BOLD_BRIGHT);
+            System.out.println("""
+                    +--------------------------------------------+
+                    |               MENU KNIŽNICE                |
+                    +--------------------------------------------+
+                    | 1. Zadaj novú knihu                        |
+                    | 2. Zobraz všetky knihy                     |
+                    | 3. Zobraz konkrétnu knihu (podľa indexu)   |
+                    | 4. Vymaž konkrétnu knihu (podľa indexu)    |
+                    | 5. Zobraz počet všetkých kníh              |
+                    | 6. Hľadaj knihu podľa autora alebo názvu   |
+                    | 7. Načítaj knižnicu z disku                |
+                    | 8. Ulož knižnicu na disk                   |
+                    | 9. Ulož zoznam kníh ako PDF                |
+                    | X. Vymaž všetky knihy                      |
+                    | Koniec = skončí zadávanie novej knihy      |
+                    +--------------------------------------------+
+                    """);
+
+            var volba = menuService.vstup(FarebnaKonzola.RESET + "Tvoja voľba: ");
+
+            if (menuActions.containsKey(volba)) {
+                menuActions.get(volba).run();
+            } else if (volba.equalsIgnoreCase("koniec")) {
+                break;
+            } else {
+                System.out.println("Zadaj voľbu z menu.");
+            }
+
+            menuService.vstup("\nPre pokračovanie stlač ENTER.");
+        }
+    }
 
     public static void main(String[] args) {
-        //Inicializácia knižnice
-        DatabazaKnihDao mojaKniznica = new DatabazaKnihDaoImpl();
-        MenuService menuService = new MenuServiceImpl(mojaKniznica);
-        SuboryServiceImpl suboryServiceImpl = new SuboryServiceImpl(mojaKniznica);
 
-        String volba;
+        inicializaciaAplikacie();
 
         //Naplnenie knižnice pre testovanie.
         naplnenieKniznice(mojaKniznica);
 
-        hlavneMenu:
-        for (; ; ) {
-            System.out.println(FarebnaKonzola.CYAN_BOLD_BRIGHT);
-            System.out.println("""
-                +--------------------------------------------+                    
-                |               MENU KNIŽNICE                |
-                +--------------------------------------------+
-                | 1. Zadaj novú knihu                        |
-                | 2. Zobraz všetky knihy                     | 
-                | 3. Zobraz konkrétnu knihu (podľa indexu)   |
-                | 4. Vymaž konkrétnu knihu (podľa indexu)    |
-                | 5. Zobraz počet všetkých kníh              |
-                | 6. Hľadaj knihu podľa autora alebo názvu   |
-                | 9. Ulož zoznam kníh ako PDF                |
-                | X9. Vymaž všetky knihy                     |
-                | Koniec = skončí zadávanie novej knihy      |
-                +--------------------------------------------+
-                """);
+        hlavneMenu();
 
-            volba = menuService.vstup(FarebnaKonzola.RESET + "Tvoja voľba: ");
-
-            switch (volba) {
-                case "1":
-                    menuService.novaKniha();
-                    break;
-                case "2":
-                    menuService.zobrazVsetkyKnihy();
-                    break;
-                case "3":
-                    menuService.zobrazKnihu();
-                    break;
-                case "4":
-                    menuService.vymazKnihu();
-                    break;
-                case "5":
-                    menuService.vypisPocetKnih();
-                    break;
-                case "6":
-                    menuService.hladajKnihu();
-                    break;
-                case "9":
-                    suboryServiceImpl.ulozDoPDF();
-                    break;
-                case "X9":
-                    menuService.vymazKniznicu();
-                    break;
-                case "Koniec":
-                    break hlavneMenu;
-                default:
-                    System.out.println("Zadaj voľbu z menu.");
-            }
-            menuService.vstup("\nPre pokračovanie stlač ENTER.");
-        }
-        System.out.println("PROGRAM KNIŽNICA BOL UKONČENÝ!");
+        System.out.println(FarebnaKonzola.CYAN_BOLD_BRIGHT + "PROGRAM KNIŽNICA BOL UKONČENÝ!");
     }
 
     /**

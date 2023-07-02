@@ -1,15 +1,16 @@
 package sk.javakurz.databazaknih.dao;
 
-import sk.javakurz.databazaknih.base.Pair;
+import sk.javakurz.databazaknih.base.Dvojica;
 import sk.javakurz.databazaknih.models.DatabazaKnihModel;
 import sk.javakurz.databazaknih.models.KnihaModel;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 public interface DatabazaKnihDao {
+
     DatabazaKnihModel getDatabazaKnihModel();
+
+    void setDatabazaKnihModel(DatabazaKnihModel databazaKnihModel);
 
     /**
      * Nájde knihu podľa indexu.
@@ -53,5 +54,17 @@ public interface DatabazaKnihDao {
      * @param hladanyText Hľadaný text.
      * @return List nájdených kníh alebo null.
      */
-    List<Pair<Integer, KnihaModel>> hladajKnihu(String hladanyText);
+    List<Dvojica<Integer, KnihaModel>> hladajKnihu(String hladanyText);
+
+    /**
+     * Vráti všetky knihy bez indexu zotriedené podľa poradia pridania, najnovšie ako posledné.
+     * @return Collection nájdených kníh KnihaModel bez indexu.
+     */
+    Collection<KnihaModel> getVsetkyKnihyBezIndexu();
+
+    /**
+     * Vráti všetky indexy použité v databázi kníh.
+     * @return Set všetkých indexov použitých v databázi.
+     */
+    Set<Integer> getIndexyVDatabazi();
 }

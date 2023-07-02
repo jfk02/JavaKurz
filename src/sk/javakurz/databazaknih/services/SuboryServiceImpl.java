@@ -1,8 +1,7 @@
 package sk.javakurz.databazaknih.services;
 
 import java.awt.*;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -15,93 +14,86 @@ import com.lowagie.text.alignment.HorizontalAlignment;
 import com.lowagie.text.alignment.VerticalAlignment;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPageEventHelper;
-import com.lowagie.text.pdf.PdfTable;
 import com.lowagie.text.pdf.PdfWriter;
 import sk.javakurz.databazaknih.dao.DatabazaKnihDao;
+import sk.javakurz.databazaknih.models.DatabazaKnihModel;
 
 public class SuboryServiceImpl implements SuboryService {
 
     private DatabazaKnihDao databazaKnihDao;
-
     private final String cestaKSuborom = "vystupykniznice/";
-/*
+    private final String nazovSuboruZalohy = "kniznica.backup";
 
-    private boolean createBackupPath(){
-        boolean isCreated = false;
+    /**
+     * Vytvorí cestu k úložisku súborov databázy.
+     *
+     * @return True ak cesta je vytvorená inak false.
+     */
+    private boolean vytvorCestu() {
+        boolean jeVytvorena = false;
+
         try {
-            File myObj = new File(backupPath);
+            File myObj = new File(cestaKSuborom + "uloziskoKniznice.txt");
             myObj.createNewFile();
-            isCreated = true;
+            jeVytvorena = true;
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
-        return isCreated;
+        return jeVytvorena;
     }
 
-    public boolean saveState() {
-        boolean isSaved = false;
-        createBackupPath();
-        try {
-            FileOutputStream fileOut = new FileOutputStream(backupPath);
-            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-            objectOut.writeObject(database.getBookData());
-            objectOut.close();
-            fileOut.close();
-            isSaved = true;
-            System.out.println("Database state saved successfully!");
-        } catch (IOException e) {
-            System.out.println("An error occurred while saving the database state.");
-            e.printStackTrace();
+    public boolean ulozDatabazu() {
+        boolean jeUlozene = false;
+
+        if (vytvorCestu()) {
+            try {
+                FileOutputStream suborNaUlozenie = new FileOutputStream(cestaKSuborom + nazovSuboruZalohy);
+                ObjectOutputStream objektPreUlozenie = new ObjectOutputStream(suborNaUlozenie);
+                objektPreUlozenie.writeObject(databazaKnihDao.getDatabazaKnihModel());
+                objektPreUlozenie.close();
+                suborNaUlozenie.close();
+                jeUlozene = true;
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
         }
-        return isSaved;
+        return jeUlozene;
     }
 
-    public boolean loadState() {
-        boolean isLoaded = false;
-        createBackupPath();
-        try {
-            FileInputStream fileIn = new FileInputStream(backupPath);
-            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-            database.setBookData((BookStorage) objectIn.readObject());
-            objectIn.close();
-            fileIn.close();
-            isLoaded = true;
-            System.out.println("Database state loaded successfully!");
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("An error occurred while loading the database state.");
-            e.printStackTrace();
+    public boolean nacitajDatabazu() {
+        boolean jeNahrata = false;
+
+        if (vytvorCestu()) {
+            try {
+                FileInputStream suborPreOtvorenie = new FileInputStream(cestaKSuborom + nazovSuboruZalohy);
+                ObjectInputStream vstupnyObjekt = new ObjectInputStream(suborPreOtvorenie);
+                databazaKnihDao.setDatabazaKnihModel((DatabazaKnihModel) vstupnyObjekt.readObject());
+                vstupnyObjekt.close();
+                suborPreOtvorenie.close();
+                jeNahrata = true;
+                System.out.println("Database state loaded successfully!");
+            } catch (IOException | ClassNotFoundException e) {
+                System.err.println(e.getMessage());
+            }
         }
-        return isLoaded;
+        return jeNahrata;
     }
 
-
-
-
-
-
-
-
-    public boolean openPdfReport(){
+/*
+    public boolean openPdfReport() {
         boolean isOpen = false;
-        try{
+        try {
             File file = new File(pdfPath);
             Desktop desktop = Desktop.getDesktop();
             if (desktop.isSupported(Desktop.Action.OPEN)) {
                 desktop.open(file);
                 isOpen = true;
             }
-        }
-        catch (DocumentException | IOException e){
-            System.out.println("An error occurred while opening the PDF report.");
-            e.printStackTrace();
+        } catch (DocumentException | IOException e) {
+            System.err.println(e.getMessage());
         }
         return isOpen;
-    }
-
-
-
-*/
-
+    }*/
 
     private Table vytvorTabulku() {
 
@@ -129,13 +121,12 @@ public class SuboryServiceImpl implements SuboryService {
         LinkedHashMap<Integer, List<String>> listRiadkov = new LinkedHashMap<>();
         AtomicInteger indexRiadku = new AtomicInteger(1);
 
-        databazaKnihDao.getDatabazaKnihModel()
-                .getDatabazaKnih()
-                .values()
+        databazaKnihDao.getVsetkyKnihyBezIndexu()
                 .forEach(kniha -> {
-                    listRiadkov.put(indexRiadku.get(), Arrays.asList(kniha.getNazov(),
-                            kniha.getAutor(),
-                            Integer.toString(kniha.getRokVydania())));
+                    listRiadkov.put(indexRiadku.get(),
+                            Arrays.asList(kniha.getNazov(),
+                                    kniha.getAutor(),
+                                    Integer.toString(kniha.getRokVydania())));
                     indexRiadku.incrementAndGet();
                 });
 
@@ -161,12 +152,14 @@ public class SuboryServiceImpl implements SuboryService {
         return tabulkaKnih;
     }
 
-    public void ulozDoPDF() {
+    public boolean ulozDoPDF() {
+
+        boolean jeUlozene = false;
 
         Document zoznamKnihPDF = new Document(PageSize.A4, 40, 40, 40, 40);
 
         String titulok = "Java Knižnica";
-        String textDokumentu = "Z našej knižnice si môžete zapožičať:";
+        String textDokumentu = "V našej knižnice sa nachádzajú nasledujúce knihy:";
 
         var zoznamKnih = vytvorTabulku();
 
@@ -212,9 +205,12 @@ public class SuboryServiceImpl implements SuboryService {
 
             zoznamKnihPDF.close();
             pdfWriter.close();
-        } catch (IOException de) {
-            System.err.println(de.getMessage());
+            jeUlozene = true;
+
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
         }
+        return jeUlozene;
     }
 
     public SuboryServiceImpl(DatabazaKnihDao databazaKnihDao) {
