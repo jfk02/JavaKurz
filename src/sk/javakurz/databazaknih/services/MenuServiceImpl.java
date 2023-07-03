@@ -3,7 +3,6 @@ package sk.javakurz.databazaknih.services;
 import sk.javakurz.databazaknih.base.FarebnaKonzola;
 import sk.javakurz.databazaknih.dao.DatabazaKnihDao;
 
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class MenuServiceImpl implements MenuService {

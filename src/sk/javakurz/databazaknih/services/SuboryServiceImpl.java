@@ -71,7 +71,6 @@ public class SuboryServiceImpl implements SuboryService {
                 vstupnyObjekt.close();
                 suborPreOtvorenie.close();
                 jeNahrata = true;
-                System.out.println("Database state loaded successfully!");
             } catch (IOException | ClassNotFoundException e) {
                 System.err.println(e.getMessage());
             }

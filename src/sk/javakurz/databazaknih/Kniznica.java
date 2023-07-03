@@ -7,8 +7,9 @@ import sk.javakurz.databazaknih.services.MenuService;
 import sk.javakurz.databazaknih.services.MenuServiceImpl;
 import sk.javakurz.databazaknih.services.SuboryService;
 import sk.javakurz.databazaknih.services.SuboryServiceImpl;
+
 import java.util.HashMap;
-import java.util.Map;
+
 
 /**
  * Hlavná trieda programu obsahujúca main metódu.
@@ -18,34 +19,43 @@ public class Kniznica {
     private static MenuService menuService;
     private static SuboryService suboryService;
 
+    //Slovník akcií vyvolávaných z menu.
+    private static final HashMap<String, Runnable> menuAkcie = new HashMap<>() {{
+        put("1", () -> menuService.novaKniha());
+        put("2", () -> menuService.zobrazVsetkyKnihy());
+        put("3", () -> menuService.zobrazKnihu());
+        put("4", () -> menuService.vymazKnihu());
+        put("5", () -> menuService.vypisPocetKnih());
+        put("6", () -> menuService.hladajKnihu());
+        put("7", () -> {
+            if (suboryService.nacitajDatabazu()) {
+                System.out.println("Knižnica bola úspešne načítaná z disku.");
+            }
+        });
+        put("8", () -> {
+            if (suboryService.ulozDatabazu()) {
+                System.out.println("Knižnica bola uložená do disku.");
+            }
+        });
+        put("9", () -> {
+            if (suboryService.ulozDoPDF()) {
+                System.out.println("Knižnica bola uložená do PDF.");
+            }
+        });
+        put("X", () -> menuService.vymazKniznicu());
+        put("Q", () -> {
+        });
+    }};
+
     /**
      * Inicializuje aplikáciu vytvorením databázy a všetkých služieb s použitím Dependency Injection.
      */
     private static void inicializaciaAplikacie() {
-        //Inicializácia knižnice
+        //Inicializácia knižnice - Dependency
         mojaKniznica = new DatabazaKnihDaoImpl();
+        //Inicializácia služieb - Dependency Injection
         menuService = new MenuServiceImpl(mojaKniznica);
         suboryService = new SuboryServiceImpl(mojaKniznica);
-    }
-
-    /**
-     * Vytvorí slovník zložený z akcií menu s kľúčom, ktorý vyvoláva menu.
-     *
-     * @return Slovník menu akcií.
-     */
-    private static Map<String, Runnable> getMenuAkcie() {
-        Map<String, Runnable> menuMap = new HashMap<>();
-        menuMap.put("1", () -> menuService.novaKniha());
-        menuMap.put("2", () -> menuService.zobrazVsetkyKnihy());
-        menuMap.put("3", () -> menuService.zobrazKnihu());
-        menuMap.put("4", () -> menuService.vymazKnihu());
-        menuMap.put("5", () -> menuService.vypisPocetKnih());
-        menuMap.put("6", () -> menuService.hladajKnihu());
-        menuMap.put("7", () -> suboryService.nacitajDatabazu());
-        menuMap.put("8", () -> suboryService.ulozDatabazu());
-        menuMap.put("9", () -> suboryService.ulozDoPDF());
-        menuMap.put("X", () -> menuService.vymazKniznicu());
-        return menuMap;
     }
 
     /**
@@ -53,9 +63,9 @@ public class Kniznica {
      */
     private static void hlavneMenu() {
 
-        var menuActions = getMenuAkcie();
+        var volba = "";
 
-        while (true) {
+        do {
             System.out.println(FarebnaKonzola.CYAN_BOLD_BRIGHT);
             System.out.println("""
                     +--------------------------------------------+
@@ -71,22 +81,19 @@ public class Kniznica {
                     | 8. Ulož knižnicu na disk                   |
                     | 9. Ulož zoznam kníh ako PDF                |
                     | X. Vymaž všetky knihy                      |
-                    | Koniec = skončí zadávanie novej knihy      |
+                    | Q. Skončí program                          |
                     +--------------------------------------------+
                     """);
 
-            var volba = menuService.vstup(FarebnaKonzola.RESET + "Tvoja voľba: ");
+            volba = menuService.vstup(FarebnaKonzola.RESET + "Tvoja voľba: ");
 
-            if (menuActions.containsKey(volba)) {
-                menuActions.get(volba).run();
-            } else if (volba.equalsIgnoreCase("koniec")) {
-                break;
+            if (menuAkcie.containsKey(volba)) {
+                menuAkcie.get(volba).run();
+                menuService.vstup("\nPre pokračovanie stlač ENTER.");
             } else {
                 System.out.println("Zadaj voľbu z menu.");
             }
-
-            menuService.vstup("\nPre pokračovanie stlač ENTER.");
-        }
+        } while (!volba.equals("Q"));
     }
 
     public static void main(String[] args) {
