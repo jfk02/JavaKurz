@@ -33,11 +33,13 @@ public class SuboryServiceImpl implements SuboryService {
         boolean jeVytvorena = false;
 
         try {
-            File myObj = new File(cestaKSuborom + "uloziskoKniznice.txt");
-            myObj.createNewFile();
+            File priecinok = new File(cestaKSuborom);
+            if (!priecinok.exists()) {
+                priecinok.mkdir();
+            }
             jeVytvorena = true;
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
+        } catch (SecurityException e) {
+            System.err.println("Priečinok pre ukladanie súborov knižnice sa nepodarilo vytvoriť!");
         }
         return jeVytvorena;
     }
@@ -155,59 +157,61 @@ public class SuboryServiceImpl implements SuboryService {
 
         boolean jeUlozene = false;
 
-        Document zoznamKnihPDF = new Document(PageSize.A4, 40, 40, 40, 40);
+        if (vytvorCestu()) {
+            Document zoznamKnihPDF = new Document(PageSize.A4, 40, 40, 40, 40);
 
-        String titulok = "Java Knižnica";
-        String textDokumentu = "V našej knižnice sa nachádzajú nasledujúce knihy:";
+            String titulok = "Java Knižnica";
+            String textDokumentu = "V našej knižnice sa nachádzajú nasledujúce knihy:";
 
-        var zoznamKnih = vytvorTabulku();
+            var zoznamKnih = vytvorTabulku();
 
-        try {
-            FileOutputStream pdfOutputFile = new FileOutputStream(cestaKSuborom + "ZoznamKníh.pdf");
-            final PdfWriter pdfWriter = PdfWriter.getInstance(zoznamKnihPDF, pdfOutputFile);
-            pdfWriter.setPageEvent(new PdfPageEventHelper() {
-                @Override
-                public void onEndPage(PdfWriter writer, Document document) {
-                    PdfContentByte cb = writer.getDirectContent();
-                }
-            });
+            try {
+                FileOutputStream pdfOutputFile = new FileOutputStream(cestaKSuborom + "ZoznamKníh.pdf");
+                final PdfWriter pdfWriter = PdfWriter.getInstance(zoznamKnihPDF, pdfOutputFile);
+                pdfWriter.setPageEvent(new PdfPageEventHelper() {
+                    @Override
+                    public void onEndPage(PdfWriter writer, Document document) {
+                        PdfContentByte cb = writer.getDirectContent();
+                    }
+                });
 
-            zoznamKnihPDF.open();  // Open the Document
+                zoznamKnihPDF.open();  // Open the Document
 
-            /* Here we add some metadata to the generated pdf */
-            zoznamKnihPDF.addTitle("Java Knižnica");
-            zoznamKnihPDF.addSubject("Zoznam kníh dostupných v Java Knižnici");
-            zoznamKnihPDF.addKeywords("Java, Knižnica, OpenPDF");
-            zoznamKnihPDF.addAuthor("Java Knižnica");
-            /* End of the adding metadata section */
+                /* Here we add some metadata to the generated pdf */
+                zoznamKnihPDF.addTitle("Java Knižnica");
+                zoznamKnihPDF.addSubject("Zoznam kníh dostupných v Java Knižnici");
+                zoznamKnihPDF.addKeywords("Java, Knižnica, OpenPDF");
+                zoznamKnihPDF.addAuthor("Java Knižnica");
+                /* End of the adding metadata section */
 
-            // Create a Font object
-            Font titleFont = new Font(Font.COURIER, 20f, Font.BOLDITALIC, Color.BLUE);
+                // Create a Font object
+                Font titleFont = new Font(Font.COURIER, 20f, Font.BOLDITALIC, Color.BLUE);
 
-            // Create a paragraph with the new font
-            Paragraph paragraph = new Paragraph(titulok, titleFont);
+                // Create a paragraph with the new font
+                Paragraph paragraph = new Paragraph(titulok, titleFont);
 
-            // Element class provides properties to align
-            // Content elements within the document
-            paragraph.setAlignment(Element.ALIGN_CENTER);
+                // Element class provides properties to align
+                // Content elements within the document
+                paragraph.setAlignment(Element.ALIGN_CENTER);
 
-            zoznamKnihPDF.add(paragraph);
+                zoznamKnihPDF.add(paragraph);
 
-            // Adding an empty line
-            zoznamKnihPDF.add(new Paragraph(Chunk.NEWLINE));
+                // Adding an empty line
+                zoznamKnihPDF.add(new Paragraph(Chunk.NEWLINE));
 
-            // Include the text as content of the pdf
-            zoznamKnihPDF.add(new Paragraph(textDokumentu));
+                // Include the text as content of the pdf
+                zoznamKnihPDF.add(new Paragraph(textDokumentu));
 
-            // 4)Finally add the table to the document
-            zoznamKnihPDF.add(zoznamKnih);
+                // 4)Finally add the table to the document
+                zoznamKnihPDF.add(zoznamKnih);
 
-            zoznamKnihPDF.close();
-            pdfWriter.close();
-            jeUlozene = true;
+                zoznamKnihPDF.close();
+                pdfWriter.close();
+                jeUlozene = true;
 
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
         }
         return jeUlozene;
     }
