@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class MenuServiceImpl implements MenuService {
 
-    private DatabazaKnihDao databazaKnihDao;
+    private final DatabazaKnihDao databazaKnihDao;
 
     private final Scanner scanner = new Scanner(System.in);
 
@@ -90,14 +90,12 @@ public class MenuServiceImpl implements MenuService {
     public void zobrazVsetkyKnihy() {
         if (databazaKnihDao.pocetKnih() > 0) {
             vypisHlavickuTabulky();
-            databazaKnihDao.getIndexyVDatabazi()
-                    .stream()
-                    .sorted()
-                    .forEach(index ->
-                            formatovanyVypis(index.toString(),
-                                    databazaKnihDao.getKniha(index).getNazov(),
-                                    databazaKnihDao.getKniha(index).getAutor(),
-                                    Integer.toString(databazaKnihDao.getKniha(index).getRokVydania())));
+            databazaKnihDao.getVsetkyKnihy()
+                    .forEach(kniha ->
+                            formatovanyVypis(kniha.getId().toString(),
+                                    kniha.getNazov(),
+                                    kniha.getMenoAutora(),
+                                    Integer.toString(kniha.getRokVydania())));
             System.out.println(oddelovacTabulky);
         } else {
             vypisChyboveHlasenie("Knižnica je prázdna!");
@@ -117,7 +115,7 @@ public class MenuServiceImpl implements MenuService {
             vypisHlavickuTabulky();
             formatovanyVypis(Integer.toString(index),
                     kniha.getNazov(),
-                    kniha.getAutor(),
+                    kniha.getMenoAutora(),
                     Integer.toString(kniha.getRokVydania()));
             System.out.println(oddelovacTabulky);
         } else {
@@ -161,11 +159,11 @@ public class MenuServiceImpl implements MenuService {
         if ((najdeneKnihy != null) && !najdeneKnihy.isEmpty()) {
             System.out.println("\nV knižnici boli nájdené tieto knihy:");
             vypisHlavickuTabulky();
-            najdeneKnihy.forEach(pair ->
-                    formatovanyVypis(pair.getPrvy().toString(),
-                            pair.getDruhy().getNazov(),
-                            pair.getDruhy().getAutor(),
-                            Integer.toString(pair.getDruhy().getRokVydania())));
+            najdeneKnihy.forEach(kniha ->
+                    formatovanyVypis(kniha.getId().toString(),
+                            kniha.getNazov(),
+                            kniha.getMenoAutora(),
+                            Integer.toString(kniha.getRokVydania())));
             System.out.println(oddelovacTabulky);
         } else {
             System.out.println("Neboli nájdené žiadne knihy!");
@@ -176,6 +174,7 @@ public class MenuServiceImpl implements MenuService {
     public void vypisPocetKnih() {
         System.out.println("Počet kníh v knižnici je: " + databazaKnihDao.pocetKnih());
     }
+
 
     public MenuServiceImpl(DatabazaKnihDao databazaKnihDao) {
         this.databazaKnihDao = databazaKnihDao;

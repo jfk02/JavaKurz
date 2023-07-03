@@ -1,16 +1,16 @@
 package sk.javakurz.databazaknih.dao;
 
-import sk.javakurz.databazaknih.base.Dvojica;
-import sk.javakurz.databazaknih.models.DatabazaKnihModel;
-import sk.javakurz.databazaknih.models.KnihaModel;
+import sk.javakurz.databazaknih.models.Autor;
+import sk.javakurz.databazaknih.models.DatabazaKnih;
+import sk.javakurz.databazaknih.models.Kniha;
 
 import java.util.*;
 
 public interface DatabazaKnihDao {
 
-    DatabazaKnihModel getDatabazaKnihModel();
+    DatabazaKnih getDatabazaKnih();
 
-    void setDatabazaKnihModel(DatabazaKnihModel databazaKnihModel);
+    void setDatabazaKnih(DatabazaKnih databazaKnih);
 
     /**
      * Nájde knihu podľa indexu.
@@ -18,7 +18,7 @@ public interface DatabazaKnihDao {
      * @param index Index knihy pre nájdenie.
      * @return Objekt Kniha alebo null ak index neexistuje.
      */
-    KnihaModel getKniha(int index);
+    Kniha getKniha(int index);
 
     /**
      * Vymaže knihu podľa indexu.
@@ -54,17 +54,42 @@ public interface DatabazaKnihDao {
      * @param hladanyText Hľadaný text.
      * @return List nájdených kníh alebo null.
      */
-    List<Dvojica<Integer, KnihaModel>> hladajKnihu(String hladanyText);
+    List<Kniha> hladajKnihu(String hladanyText);
 
     /**
      * Vráti všetky knihy bez indexu zotriedené podľa poradia pridania, najnovšie ako posledné.
      * @return Collection nájdených kníh KnihaModel bez indexu.
      */
-    Collection<KnihaModel> getVsetkyKnihyBezIndexu();
+    ArrayList<Kniha> getVsetkyKnihy();
 
     /**
      * Vráti všetky indexy použité v databázi kníh.
-     * @return Set všetkých indexov použitých v databázi.
+     * @return Zoradený List všetkých indexov kníh.
      */
-    Set<Integer> getIndexyVDatabazi();
+    List<Integer> getIndexyKnih();
+
+    /**
+     * Vráti všetky indexy použité v databázi autorov.
+     * @return Zoradený List všetkých indexov autorov.
+     */
+    List<Integer> getIndexyAutorov();
+
+    /**
+     * Zistí stav knižnice, ak bola zmenená je false.
+     * @return Stav knižnice ako boolean.
+     */
+    boolean isKniznicaZmenena();
+
+    /**
+     * Nastaví stav zmeny knižnice
+     * @param kniznicaZmenena Stav knižnice.
+     */
+    void setKniznicaZmenena(boolean kniznicaZmenena);
+
+    /**
+     * Nájde autora podľa mena.
+     * @param meno Meno autora.
+     * @return Autor alebo null ak autor neexistuje.
+     */
+    Autor najdiAutora(String meno);
 }

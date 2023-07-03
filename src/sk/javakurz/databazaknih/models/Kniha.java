@@ -2,21 +2,33 @@ package sk.javakurz.databazaknih.models;
 
 import java.io.Serializable;
 
-/**
- * Model Knihy
- */
-public class KnihaModel implements Serializable {
-    private String autor;
+public class Kniha implements Serializable {
+
+    private Autor autor;
     private String nazov;
     private int rokVydania;
     private String zaner;
 
-    public String getAutor() {
+    private Integer id;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public Autor getAutor() {
         return autor;
     }
 
-    public void setAutor(String autor) {
+    public void setAutor(Autor autor) {
         this.autor = autor;
+    }
+
+    public String getMenoAutora() {
+        return autor.getMeno();
+    }
+
+    public void setMenoAutora(String autor) {
+        this.autor.setMeno(autor);
     }
 
     public String getNazov() {
@@ -53,21 +65,23 @@ public class KnihaModel implements Serializable {
 
     private String vydavatelstvo;
 
-    public KnihaModel(String autor, String nazov, int rokVydania, String zaner, String vydavatelstvo) {
-        this.autor = autor;
+    public Kniha(String nazov, int rokVydania, String zaner, String vydavatelstvo, Autor autor, int id) {
         this.nazov = nazov;
         this.rokVydania = rokVydania;
         this.zaner = zaner;
         this.vydavatelstvo = vydavatelstvo;
+        this.autor = autor;
+        this.id = id;
     }
 
-    public KnihaModel(String autor, String nazov, int rokVydania) {
-        this.autor = autor;
+    public Kniha(String nazov, int rokVydania, Autor autor, int id) {
         this.nazov = nazov;
         this.rokVydania = rokVydania;
+        this.autor = autor;
+        this.id = id;
     }
 
-    public KnihaModel(String nazov) {
+    public Kniha(String nazov) {
         this.nazov = nazov;
     }
 }

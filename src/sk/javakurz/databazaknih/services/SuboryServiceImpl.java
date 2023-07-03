@@ -16,11 +16,11 @@ import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfWriter;
 import sk.javakurz.databazaknih.dao.DatabazaKnihDao;
-import sk.javakurz.databazaknih.models.DatabazaKnihModel;
+import sk.javakurz.databazaknih.models.DatabazaKnih;
 
 public class SuboryServiceImpl implements SuboryService {
 
-    private DatabazaKnihDao databazaKnihDao;
+    private final DatabazaKnihDao databazaKnihDao;
     private final String cestaKSuborom = "vystupykniznice/";
     private final String nazovSuboruZalohy = "kniznica.backup";
 
@@ -51,10 +51,11 @@ public class SuboryServiceImpl implements SuboryService {
             try {
                 FileOutputStream suborNaUlozenie = new FileOutputStream(cestaKSuborom + nazovSuboruZalohy);
                 ObjectOutputStream objektPreUlozenie = new ObjectOutputStream(suborNaUlozenie);
-                objektPreUlozenie.writeObject(databazaKnihDao.getDatabazaKnihModel());
+                objektPreUlozenie.writeObject(databazaKnihDao.getDatabazaKnih());
                 objektPreUlozenie.close();
                 suborNaUlozenie.close();
                 jeUlozene = true;
+                databazaKnihDao.setKniznicaZmenena(false);
             } catch (IOException e) {
                 System.err.println(e.getMessage());
             }
@@ -68,10 +69,11 @@ public class SuboryServiceImpl implements SuboryService {
         try {
             FileInputStream suborPreOtvorenie = new FileInputStream(cestaKSuborom + nazovSuboruZalohy);
             ObjectInputStream vstupnyObjekt = new ObjectInputStream(suborPreOtvorenie);
-            databazaKnihDao.setDatabazaKnihModel((DatabazaKnihModel) vstupnyObjekt.readObject());
+            databazaKnihDao.setDatabazaKnih((DatabazaKnih) vstupnyObjekt.readObject());
             vstupnyObjekt.close();
             suborPreOtvorenie.close();
             jeNahrata = true;
+            databazaKnihDao.setKniznicaZmenena(false);
         } catch (IOException | ClassNotFoundException e) {
             //System.err.println(e.getMessage());
             System.err.println("Nepodarilo sa načitať knižnicu z disku. Súbor nebol nájdený, alebo je poškodený!");
@@ -122,11 +124,11 @@ public class SuboryServiceImpl implements SuboryService {
         LinkedHashMap<Integer, List<String>> listRiadkov = new LinkedHashMap<>();
         AtomicInteger indexRiadku = new AtomicInteger(1);
 
-        databazaKnihDao.getVsetkyKnihyBezIndexu()
+        databazaKnihDao.getVsetkyKnihy()
                 .forEach(kniha -> {
                     listRiadkov.put(indexRiadku.get(),
                             Arrays.asList(kniha.getNazov(),
-                                    kniha.getAutor(),
+                                    kniha.getMenoAutora(),
                                     Integer.toString(kniha.getRokVydania())));
                     indexRiadku.incrementAndGet();
                 });
