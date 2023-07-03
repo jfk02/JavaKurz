@@ -63,18 +63,18 @@ public class SuboryServiceImpl implements SuboryService {
     public boolean nacitajDatabazu() {
         boolean jeNahrata = false;
 
-        if (vytvorCestu()) {
-            try {
-                FileInputStream suborPreOtvorenie = new FileInputStream(cestaKSuborom + nazovSuboruZalohy);
-                ObjectInputStream vstupnyObjekt = new ObjectInputStream(suborPreOtvorenie);
-                databazaKnihDao.setDatabazaKnihModel((DatabazaKnihModel) vstupnyObjekt.readObject());
-                vstupnyObjekt.close();
-                suborPreOtvorenie.close();
-                jeNahrata = true;
-            } catch (IOException | ClassNotFoundException e) {
-                System.err.println(e.getMessage());
-            }
+        try {
+            FileInputStream suborPreOtvorenie = new FileInputStream(cestaKSuborom + nazovSuboruZalohy);
+            ObjectInputStream vstupnyObjekt = new ObjectInputStream(suborPreOtvorenie);
+            databazaKnihDao.setDatabazaKnihModel((DatabazaKnihModel) vstupnyObjekt.readObject());
+            vstupnyObjekt.close();
+            suborPreOtvorenie.close();
+            jeNahrata = true;
+        } catch (IOException | ClassNotFoundException e) {
+            //System.err.println(e.getMessage());
+            System.err.println("Nepodarilo sa načitať knižnicu z disku. Súbor nebol nájdený, alebo je poškodený!");
         }
+
         return jeNahrata;
     }
 

@@ -20,7 +20,7 @@ public class Kniznica {
     private static SuboryService suboryService;
 
     //Slovník akcií vyvolávaných z menu.
-    private static final HashMap<String, Runnable> menuAkcie = new HashMap<>() {{
+    private static final HashMap<String, Runnable> MENU_AKCIE = new HashMap<>() {{
         put("1", () -> menuService.novaKniha());
         put("2", () -> menuService.zobrazVsetkyKnihy());
         put("3", () -> menuService.zobrazKnihu());
@@ -87,8 +87,8 @@ public class Kniznica {
 
             volba = menuService.vstup(FarebnaKonzola.RESET + "Tvoja voľba: ");
 
-            if (menuAkcie.containsKey(volba)) {
-                menuAkcie.get(volba).run();
+            if (MENU_AKCIE.containsKey(volba)) {
+                MENU_AKCIE.get(volba).run();
                 menuService.vstup("\nPre pokračovanie stlač ENTER.");
             } else {
                 System.out.println("Zadaj voľbu z menu.");
