@@ -2,7 +2,7 @@ package sk.javakurz.databazaknih.models;
 
 import java.io.Serializable;
 
-public class Kniha implements Serializable {
+public class Kniha extends ZakladnyZaznam implements Serializable {
 
     private Autor autor;
     private String nazov;
@@ -11,6 +11,7 @@ public class Kniha implements Serializable {
 
     private Integer id;
 
+    @Override
     public Integer getId() {
         return id;
     }

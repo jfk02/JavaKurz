@@ -1,9 +1,9 @@
 package sk.javakurz.databazaknih.dao;
 
-import sk.javakurz.databazaknih.base.Dvojica;
 import sk.javakurz.databazaknih.models.Autor;
 import sk.javakurz.databazaknih.models.DatabazaKnih;
 import sk.javakurz.databazaknih.models.Kniha;
+import sk.javakurz.databazaknih.models.ZakladnyZaznam;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -70,7 +70,7 @@ public class DatabazaKnihDaoImpl implements DatabazaKnihDao {
 
         var jeVDatabaze = i != velkostKniznice;
 
-        if(jeVDatabaze){
+        if (jeVDatabaze) {
             databazaKnih.getDatabazaKnih().remove(i);
         }
 
@@ -126,18 +126,12 @@ public class DatabazaKnihDaoImpl implements DatabazaKnihDao {
 
     @Override
     public List<Integer> getIndexyKnih() {
-        return databazaKnih.getDatabazaKnih().stream()
-                .map(Kniha::getId)
-                .sorted()
-                .toList();
+        return databazaKnih.getIdKnih();
     }
 
     @Override
     public List<Integer> getIndexyAutorov() {
-        return databazaKnih.getDatabazaAutorov().stream()
-                .map(Autor::getId)
-                .sorted()
-                .toList();
+        return databazaKnih.getIdAutorov();
     }
 
     @Override

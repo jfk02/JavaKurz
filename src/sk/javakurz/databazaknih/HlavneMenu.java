@@ -29,12 +29,12 @@ public class HlavneMenu {
         });
         put("8", () -> {
             if (suboryService.ulozDatabazu()) {
-                System.out.println("Knižnica bola uložená do disku.");
+                System.out.println("Knižnica bola uložená na disk.");
             }
         });
         put("9", () -> {
             if (suboryService.ulozDoPDF()) {
-                System.out.println("Knižnica bola uložená do PDF.");
+                System.out.println("Knižnica bola uložená ako PDF.");
             }
         });
         put("X", () -> menuService.vymazKniznicu());

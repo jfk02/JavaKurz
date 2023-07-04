@@ -2,9 +2,10 @@ package sk.javakurz.databazaknih.models;
 
 import java.io.Serializable;
 
-public class Autor implements Serializable {
+public class Autor extends ZakladnyZaznam implements Serializable {
     private final Integer id;
 
+    @Override
     public Integer getId() {
         return id;
     }

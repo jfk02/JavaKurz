@@ -2,7 +2,7 @@ package sk.javakurz.databazaknih.models;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.List;
 
 public class DatabazaKnih implements Serializable {
 
@@ -16,6 +16,22 @@ public class DatabazaKnih implements Serializable {
 
     public ArrayList<Autor> getDatabazaAutorov() {
         return databazaAutorov;
+    }
+
+    public List<Integer> getIdAutorov() {
+        return databazaAutorov
+                .stream()
+                .map(ZakladnyZaznam::getId)
+                .sorted()
+                .toList();
+    }
+
+    public List<Integer> getIdKnih() {
+        return databazaKnih
+                .stream()
+                .map(ZakladnyZaznam::getId)
+                .sorted()
+                .toList();
     }
 
     public DatabazaKnih() {
