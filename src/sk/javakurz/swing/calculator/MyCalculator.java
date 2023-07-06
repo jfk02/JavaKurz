@@ -67,7 +67,7 @@ public class MyCalculator {
 
     public MyCalculator() {
 
-        calculatorService = new CalculatorService();
+        calculatorService = new CalculatorServiceImpl();
 
         var numbersListener = createNumbersListener();
         a0Button.addActionListener(numbersListener);
