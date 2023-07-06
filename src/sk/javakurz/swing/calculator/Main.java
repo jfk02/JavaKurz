@@ -7,26 +7,13 @@ import java.awt.*;
 public class Main {
     public static void main(String[] args) {
 
-//        try {
-//            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (Exception e) {
-//            // If Nimbus is not available, you can set the GUI to another look and feel.
-//            System.err.println("Nimbus is not available");
-//        }
-
         try {
             NimbusLookAndFeel nimbusLookAndFeel = new NimbusLookAndFeel();
             UIManager.setLookAndFeel(nimbusLookAndFeel);
-            nimbusLookAndFeel.getDefaults().put("defaultFont", new Font("Arial Black", Font.PLAIN, 24));
+            nimbusLookAndFeel.getDefaults().put("defaultFont", new Font("Arial", Font.PLAIN, 24));
         } catch (Exception e) {
             System.err.println("Nimbus is not available");
         }
-
 
         JFrame frame = new JFrame("MyCalculator");
         frame.setContentPane(new MyCalculator().getPanel1());
