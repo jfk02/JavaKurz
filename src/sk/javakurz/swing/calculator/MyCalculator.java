@@ -8,7 +8,7 @@ import java.math.MathContext;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Objects;
-import java.util.function.Function;
+import java.util.concurrent.Callable;
 
 public class MyCalculator {
 
@@ -36,10 +36,18 @@ public class MyCalculator {
     private JButton equalButton;
     private JButton divideButton;
     private JButton cButton;
+    private JButton backspaceButton;
+    private JButton plusMinusButton;
+
+    CalculatorService calculatorService;
 
     private String displayText = "";
 
-    private final LinkedList<String> calculationQueue = new LinkedList<>();
+    private final LinkedList<BigDecimal> calculationQueue = new LinkedList<>();
+
+    private BigDecimal constantOperand = null;
+
+    private String constantOperator = "";
 
     private String mathOperator = "";
 
@@ -47,104 +55,126 @@ public class MyCalculator {
 
     private final MathContext mathContext = new MathContext(10);
 
-    private final HashMap<String, Function<BigDecimal[], BigDecimal>> mathEvaluators = new HashMap<>() {
+    private final HashMap<String, Callable<BigDecimal>> mathEvaluators = new HashMap<>() {
         {
-            put("+", (BigDecimal[] operands) -> operands[0].add(operands[1], mathContext));
-            put("-", (BigDecimal[] operands) -> operands[0].subtract(operands[1], mathContext));
-            put("x", (BigDecimal[] operands) -> operands[0].multiply(operands[1], mathContext));
-            put("/", (BigDecimal[] operands) -> operands[0].divide(operands[1], mathContext));
+            put("+", () -> calculationQueue.removeFirst().add(calculationQueue.removeLast(), mathContext));
+            put("-", () -> calculationQueue.removeFirst().subtract(calculationQueue.removeLast(), mathContext));
+            put("x", () -> calculationQueue.removeFirst().multiply(calculationQueue.removeLast(), mathContext));
+            put("/", () -> calculationQueue.removeFirst().divide(calculationQueue.removeLast(), mathContext));
         }
     };
 
     private ActionListener createNumbersListener() {
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (hasResult) {
-                    hasResult = false;
-                    displayText = "";
-                }
+        return e -> {
 
-                displayText += displayText.length() < 15 ? e.getActionCommand() : "";
-                display.setText(displayText);
-            }
+//            if (hasResult) {
+//                hasResult = false;
+//                constantOperand = null;
+//
+//                if (!mathOperator.isEmpty()) {
+//                    calculationQueue.add(new BigDecimal(Objects.requireNonNull(displayText)));
+//                }
+//
+//                displayText = "";
+//            }
+//
+//            displayText += displayText.length() < 15 ? e.getActionCommand() : "";
+//            displayText = removeHeadingZero(displayText);
+            display.setText(calculatorService.doNumbersAction(e.getActionCommand()));
         };
     }
 
     private ActionListener createOperatorsListener() {
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                hasResult = false;
+        return e -> {
+            display.setText(calculatorService.doOperatorsAction(e.getActionCommand()));
 
-                if (!displayText.isEmpty()) {
-                    calculationQueue.add(displayText);
-                    clearDisplay();
-                }
-
-                if (calculationQueue.size() == 1) {
-                    clearDisplay();
-                } else if (calculationQueue.size() == 2) {
-                    calculate();
-                }
-
-                mathOperator = e.getActionCommand();
-            }
+//            hasResult = false;
+//
+//            if (!displayText.isEmpty()) {
+//                calculationQueue.add(new BigDecimal(Objects.requireNonNull(displayText)));
+//                clearDisplay();
+//            }
+//
+//            if (calculationQueue.size() == 2) {
+//                calculate();
+//            }
+//
+//            mathOperator = e.getActionCommand();
         };
     }
 
     private ActionListener createClearButtonListener() {
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                calculationQueue.clear();
-                clearDisplay();
-            }
+        return e -> {
+            display.setText("");
+            calculatorService.allClear();
+//            calculationQueue.clear();
+//            hasResult = false;
+//            constantOperand = null;
+//            clearDisplay();
         };
     }
 
     private ActionListener createPeriodButtonListener() {
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                displayText += !displayText.contains(".") ? "." : "";
-            }
-        };
+//        return e -> displayText += !displayText.contains(".") ? "." : "";
+        return e-> display.setText(calculatorService.addPeriod());
     }
 
     private ActionListener createEqualButtonListener() {
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (calculationQueue.size() == 1 && !mathOperator.isEmpty()) {
-                    calculationQueue.add(displayText);
-                    calculate();
-                }
-            }
+        return e -> {
+            display.setText(calculatorService.performCalculation());
+//            if (!displayText.isEmpty()) {
+//                var displayedOperand = new BigDecimal(Objects.requireNonNull(displayText));
+//                if (calculationQueue.size() == 1 && !mathOperator.isEmpty()) {
+//                    calculationQueue.add(displayedOperand);
+//                    constantOperand = displayedOperand;
+//                    constantOperator = mathOperator;
+//                    calculate();
+//                } else if (calculationQueue.isEmpty() && constantOperand != null) {
+//                    calculationQueue.add(displayedOperand);
+//                    calculationQueue.add(constantOperand);
+//                    mathOperator = constantOperator;
+//                    calculate();
+//                }
+//            }
+//            mathOperator = "";
+        };
+    }
+
+    private ActionListener createPlusMinusListener() {
+        return e -> {
+            display.setText(calculatorService.addMinusSign());
+//            if (!displayText.isEmpty()) {
+//                displayText = displayText.startsWith("-") ? displayText.substring(1) : "-" + displayText;
+//                display.setText(displayText);
+//            }
+        };
+    }
+
+    private ActionListener createBackspaceListener() {
+        return e -> {
+            display.setText(calculatorService.doBackspace());
+//            if (!displayText.isEmpty() && !hasResult) {
+//                displayText = displayText.substring(0, displayText.length() - 1);
+//                display.setText(displayText);
+//            }
         };
     }
 
     private void calculate() {
-        if (!mathOperator.isEmpty() && calculationQueue.size() == 2) {
-            try {
-                BigDecimal[] operands = new BigDecimal[]{
-                        new BigDecimal(Objects.requireNonNull(calculationQueue.poll())),
-                        new BigDecimal(Objects.requireNonNull(calculationQueue.poll()))
-                };
-                BigDecimal result = mathEvaluators.get(mathOperator).apply(operands);
-                displayText = result.toString();
-                display.setText(displayText);
-                hasResult = true;
-            } catch (ArithmeticException e) {
-                showError();
-            }
-            mathOperator = "";
+        hasResult = false;
+        try {
+            BigDecimal result = mathEvaluators.get(mathOperator).call();
+            displayText = result.toString();
+            display.setText(displayText);
+            hasResult = true;
+        } catch (Exception e) {
+            showError();
         }
     }
 
     private void clearDisplay() {
         displayText = "";
-        display.setText("0");
+        display.setText(displayText);
     }
 
     private void showError() {
@@ -152,7 +182,18 @@ public class MyCalculator {
         display.setText("Error");
     }
 
+    private String removeHeadingZero(String number) {
+
+        if (number.length() > 1 && number.startsWith("0") && !number.startsWith("0.")) {
+            number = number.substring(1);
+        }
+        return number;
+    }
+
+
     public MyCalculator() {
+
+        calculatorService = new CalculatorService();
 
         var numbersListener = createNumbersListener();
         a0Button.addActionListener(numbersListener);
@@ -177,5 +218,9 @@ public class MyCalculator {
         periodButton.addActionListener(createPeriodButtonListener());
 
         cButton.addActionListener(createClearButtonListener());
+
+        plusMinusButton.addActionListener(createPlusMinusListener());
+
+        backspaceButton.addActionListener(createBackspaceListener());
     }
 }

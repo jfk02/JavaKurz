@@ -18,8 +18,8 @@ public class Main {
         JFrame frame = new JFrame("MyCalculator");
         frame.setContentPane(new MyCalculator().getPanel1());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 400);
-        frame.setMinimumSize(new Dimension(400, 400));
+        frame.setSize(350, 450);
+        frame.setMinimumSize(new Dimension(350, 450));
         frame.setLocationRelativeTo(null);
         frame.pack();
         frame.setVisible(true);
