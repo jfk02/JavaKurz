@@ -48,16 +48,16 @@ public class MyCalculator {
     private final MathContext mathContext = new MathContext(10);
 
     private final HashMap<String, Function<BigDecimal[], BigDecimal>> mathEvaluators = new HashMap<>() {
-                {
-                    put("+", (BigDecimal[] operands) -> operands[0].add(operands[1],mathContext));
-                    put("-", (BigDecimal[] operands) -> operands[0].subtract(operands[1], mathContext));
-                    put("x", (BigDecimal[] operands) -> operands[0].multiply(operands[1], mathContext));
-                    put("/", (BigDecimal[] operands) -> operands[0].divide(operands[1],  mathContext));
-                }
-            };
+        {
+            put("+", (BigDecimal[] operands) -> operands[0].add(operands[1], mathContext));
+            put("-", (BigDecimal[] operands) -> operands[0].subtract(operands[1], mathContext));
+            put("x", (BigDecimal[] operands) -> operands[0].multiply(operands[1], mathContext));
+            put("/", (BigDecimal[] operands) -> operands[0].divide(operands[1], mathContext));
+        }
+    };
 
-    private void addNumbersListener() {
-        var numbersListener = new ActionListener() {
+    private ActionListener createNumbersListener() {
+        return new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (hasResult) {
@@ -69,20 +69,10 @@ public class MyCalculator {
                 display.setText(displayText);
             }
         };
-        a0Button.addActionListener(numbersListener);
-        a1Button.addActionListener(numbersListener);
-        a2Button.addActionListener(numbersListener);
-        a3Button.addActionListener(numbersListener);
-        a4Button.addActionListener(numbersListener);
-        a5Button.addActionListener(numbersListener);
-        a6Button.addActionListener(numbersListener);
-        a7Button.addActionListener(numbersListener);
-        a8Button.addActionListener(numbersListener);
-        a9Button.addActionListener(numbersListener);
     }
 
-    private void addOperatorsListener() {
-        var operatorsListener = new ActionListener() {
+    private ActionListener createOperatorsListener() {
+        return new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 hasResult = false;
@@ -101,30 +91,29 @@ public class MyCalculator {
                 mathOperator = e.getActionCommand();
             }
         };
-        plusButton.addActionListener(operatorsListener);
-        minusButton.addActionListener(operatorsListener);
-        multiplicationButton.addActionListener(operatorsListener);
-        divideButton.addActionListener(operatorsListener);
-        cButton.addActionListener(operatorsListener);
     }
 
-    private void addSpecialButtonsListener() {
-        cButton.addActionListener(new ActionListener() {
+    private ActionListener createClearButtonListener() {
+        return new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 calculationQueue.clear();
                 clearDisplay();
             }
-        });
+        };
+    }
 
-        periodButton.addActionListener(new ActionListener() {
+    private ActionListener createPeriodButtonListener() {
+        return new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 displayText += !displayText.contains(".") ? "." : "";
             }
-        });
+        };
+    }
 
-        equalButton.addActionListener(new ActionListener() {
+    private ActionListener createEqualButtonListener() {
+        return new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (calculationQueue.size() == 1 && !mathOperator.isEmpty()) {
@@ -132,7 +121,7 @@ public class MyCalculator {
                     calculate();
                 }
             }
-        });
+        };
     }
 
     private void calculate() {
@@ -164,8 +153,29 @@ public class MyCalculator {
     }
 
     public MyCalculator() {
-        addNumbersListener();
-        addOperatorsListener();
-        addSpecialButtonsListener();
+
+        var numbersListener = createNumbersListener();
+        a0Button.addActionListener(numbersListener);
+        a1Button.addActionListener(numbersListener);
+        a2Button.addActionListener(numbersListener);
+        a3Button.addActionListener(numbersListener);
+        a4Button.addActionListener(numbersListener);
+        a5Button.addActionListener(numbersListener);
+        a6Button.addActionListener(numbersListener);
+        a7Button.addActionListener(numbersListener);
+        a8Button.addActionListener(numbersListener);
+        a9Button.addActionListener(numbersListener);
+
+        var operatorsListener = createOperatorsListener();
+        plusButton.addActionListener(operatorsListener);
+        minusButton.addActionListener(operatorsListener);
+        multiplicationButton.addActionListener(operatorsListener);
+        divideButton.addActionListener(operatorsListener);
+
+        equalButton.addActionListener(createEqualButtonListener());
+
+        periodButton.addActionListener(createPeriodButtonListener());
+
+        cButton.addActionListener(createClearButtonListener());
     }
 }
