@@ -1,6 +1,5 @@
 package sk.javakurz.swing.calculator;
 
-import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.HashMap;
@@ -32,7 +31,7 @@ public class CalculatorService {
             put("+", () -> calculationQueue.removeFirst().add(calculationQueue.removeLast(), mathContext));
             put("-", () -> calculationQueue.removeFirst().subtract(calculationQueue.removeLast(), mathContext));
             put("x", () -> calculationQueue.removeFirst().multiply(calculationQueue.removeLast(), mathContext));
-            put("/", () -> calculationQueue.removeFirst().divide(calculationQueue.removeLast(), mathContext));
+            put("÷", () -> calculationQueue.removeFirst().divide(calculationQueue.removeLast(), mathContext));
         }
     };
 
@@ -79,12 +78,14 @@ public class CalculatorService {
     }
 
     public String addPeriod() {
-        displayText += !displayText.contains(".") ? "." : "";
+        if(!hasResult) {
+            displayText += !displayText.contains(".") ? "." : "";
+        }
         return displayText;
     }
 
     public String performCalculation() {
-        String resultText = "";
+        String resultText = displayText;
         if (!displayText.isEmpty()) {
             var displayedOperand = new BigDecimal(Objects.requireNonNull(displayText));
             if (calculationQueue.size() == 1 && !mathOperator.isEmpty()) {
