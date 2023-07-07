@@ -10,7 +10,7 @@ public class Main {
         try {
             NimbusLookAndFeel nimbusLookAndFeel = new NimbusLookAndFeel();
             UIManager.setLookAndFeel(nimbusLookAndFeel);
-            nimbusLookAndFeel.getDefaults().put("defaultFont", new Font("Arial", Font.PLAIN, 24));
+            nimbusLookAndFeel.getDefaults().put("defaultFont", new Font("Arial", Font.PLAIN, 30));
         } catch (Exception e) {
             System.err.println("Nimbus is not available");
         }
