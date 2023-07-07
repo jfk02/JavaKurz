@@ -17,6 +17,7 @@ public class CalculatorServiceImpl implements CalculatorService {
     private String constantOperator = "";
     private String mathOperator = "";
     private boolean hasResult = false;
+    private final BigDecimal hundredPercent = new BigDecimal("100");
     private final MathContext mathContext = new MathContext(10);
     private final HashMap<String, Callable<BigDecimal>> mathEvaluators = new HashMap<>() {
         {
@@ -24,6 +25,24 @@ public class CalculatorServiceImpl implements CalculatorService {
             put("-", () -> operandsQueue.removeFirst().subtract(operandsQueue.removeFirst(), mathContext));
             put("x", () -> operandsQueue.removeFirst().multiply(operandsQueue.removeFirst(), mathContext));
             put("÷", () -> operandsQueue.removeFirst().divide(operandsQueue.removeFirst(), mathContext));
+            put("+%", () -> {
+                var firstOperand = operandsQueue.removeFirst();
+                var secondOperand = operandsQueue.removeFirst().divide(hundredPercent, mathContext)
+                        .multiply(firstOperand);
+                return firstOperand.add(secondOperand, mathContext);
+            });
+            put("-%", () -> {
+                var firstOperand = operandsQueue.removeFirst();
+                var secondOperand = operandsQueue.removeFirst().divide(hundredPercent, mathContext)
+                        .multiply(firstOperand);
+                return firstOperand.subtract(secondOperand, mathContext);
+            });
+            put("x%", () -> operandsQueue.removeFirst()
+                    .multiply(operandsQueue.removeFirst(), mathContext)
+                    .divide(hundredPercent, mathContext));
+            put("÷%", () -> operandsQueue.removeFirst()
+                    .divide(operandsQueue.removeFirst(), mathContext)
+                    .multiply(hundredPercent, mathContext));
         }
     };
 
@@ -69,11 +88,13 @@ public class CalculatorServiceImpl implements CalculatorService {
     }
 
     @Override
-    public String performCalculation() {
+    public String performCalculation(String pressedButton) {
         String resultText = displayText;
+
         if (!displayText.isEmpty()) {
             var secondOperand = stringToBigDecimal(displayText);
             if (!mathOperator.isEmpty()) {
+                mathOperator += addPercentageOperator(pressedButton);
                 operandsQueue.add(secondOperand);
                 constantOperand = secondOperand;
                 constantOperator = mathOperator;
@@ -92,6 +113,10 @@ public class CalculatorServiceImpl implements CalculatorService {
     public String addMinusSign() {
         if (!displayText.isEmpty()) {
             displayText = displayText.startsWith("-") ? displayText.substring(1) : "-" + displayText;
+            if (hasResult) {
+                operandsQueue.removeLast();
+                operandsQueue.add(stringToBigDecimal(displayText));
+            }
         }
         return displayText;
     }
@@ -115,7 +140,7 @@ public class CalculatorServiceImpl implements CalculatorService {
             hasResult = true;
         } catch (Exception e) {
             displayText = "";
-            resultText = "Delenie nulou!";
+            resultText = "Error";
         }
         return resultText;
     }
@@ -127,6 +152,10 @@ public class CalculatorServiceImpl implements CalculatorService {
             displayText = "";
             if (mathOperator.isEmpty()) operandsQueue.clear();
         }
+    }
+
+    private String addPercentageOperator(String button) {
+        return button.equals("%") && mathOperator.length() == 1 ? "%" : "";
     }
 
     private String removeLeadingZero(String number) {

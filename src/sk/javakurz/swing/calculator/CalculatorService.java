@@ -9,7 +9,7 @@ public interface CalculatorService {
 
     String addPeriod();
 
-    String performCalculation();
+    String performCalculation(String pressedButton);
 
     String addMinusSign();
 

@@ -31,6 +31,7 @@ public class MyCalculator {
     private JButton cButton;
     private JButton backspaceButton;
     private JButton plusMinusButton;
+    private JButton percentageButton;
 
     CalculatorService calculatorService;
 
@@ -53,8 +54,8 @@ public class MyCalculator {
         return e -> display.setText(calculatorService.addPeriod());
     }
 
-    private ActionListener createEqualButtonListener() {
-        return e -> display.setText(calculatorService.performCalculation());
+    private ActionListener createPerformCalculationListener() {
+        return e -> display.setText(calculatorService.performCalculation(e.getActionCommand()));
     }
 
     private ActionListener createPlusMinusListener() {
@@ -87,7 +88,9 @@ public class MyCalculator {
         multiplicationButton.addActionListener(operatorsListener);
         divideButton.addActionListener(operatorsListener);
 
-        equalButton.addActionListener(createEqualButtonListener());
+        var performCalculationListener = createPerformCalculationListener();
+        equalButton.addActionListener(performCalculationListener);
+        percentageButton.addActionListener(performCalculationListener);
 
         periodButton.addActionListener(createPeriodButtonListener());
 

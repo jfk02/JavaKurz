@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
-public class CalculatorServiceImplBackup implements CalculatorService {
+public class CalculatorServiceImplBackup {
 
     public CalculatorServiceImplBackup() {
     }
@@ -28,7 +28,7 @@ public class CalculatorServiceImplBackup implements CalculatorService {
         }
     };
 
-    @Override
+ //   @Override
     public String doNumbersAction(String pressedNumber) {
         if (hasResult) {
             hasResult = false;
@@ -46,7 +46,7 @@ public class CalculatorServiceImplBackup implements CalculatorService {
         return displayText;
     }
 
-    @Override
+ //   @Override
     public String doOperatorsAction(String operator) {
         hasResult = false;
         String resultText = "";
@@ -65,7 +65,7 @@ public class CalculatorServiceImplBackup implements CalculatorService {
         return resultText;
     }
 
-    @Override
+ //   @Override
     public void allClear() {
         calculationQueue.clear();
         hasResult = false;
@@ -73,7 +73,7 @@ public class CalculatorServiceImplBackup implements CalculatorService {
         displayText = "";
     }
 
-    @Override
+ //   @Override
     public String addPeriod() {
         if(!hasResult) {
             displayText += !displayText.contains(".") ? "." : "";
@@ -81,7 +81,7 @@ public class CalculatorServiceImplBackup implements CalculatorService {
         return displayText;
     }
 
-    @Override
+ //   @Override
     public String performCalculation() {
         String resultText = displayText;
         if (!displayText.isEmpty()) {
@@ -102,7 +102,7 @@ public class CalculatorServiceImplBackup implements CalculatorService {
         return resultText;
     }
 
-    @Override
+ //   @Override
     public String addMinusSign() {
         if (!displayText.isEmpty()) {
             displayText = displayText.startsWith("-") ? displayText.substring(1) : "-" + displayText;
@@ -110,7 +110,7 @@ public class CalculatorServiceImplBackup implements CalculatorService {
         return displayText;
     }
 
-    @Override
+ //   @Override
     public String doBackspace() {
         if (!displayText.isEmpty() && !hasResult) {
             displayText = displayText.substring(0, displayText.length() - 1);
